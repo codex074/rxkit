@@ -1,0 +1,38 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "defaultSetItems",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "setId", "order": "ASCENDING" },
+        { "fieldPath": "sortOrder", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "fieldUnitItems",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "fieldUnitId", "order": "ASCENDING" },
+        { "fieldPath": "sortOrder", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "drugs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "active", "order": "ASCENDING" },
+        { "fieldPath": "name", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "defaultSetItems",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "setId", "order": "ASCENDING" },
+        { "fieldPath": "active", "order": "ASCENDING" },
+        { "fieldPath": "sortOrder", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
