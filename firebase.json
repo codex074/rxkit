@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "rxkit-opd",
     "public": "dist",
     "ignore": [
       "firebase.json",
