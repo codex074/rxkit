@@ -6,7 +6,6 @@ import { LoginPage } from '../pages/LoginPage'
 import { DashboardPage } from '../pages/DashboardPage'
 import { DrugListPage } from '../pages/DrugListPage'
 import { UnitTypesPage } from '../pages/UnitTypesPage'
-import { DefaultSetsPage } from '../pages/DefaultSetsPage'
 import { CreateFieldUnitPage } from '../pages/CreateFieldUnitPage'
 import { FieldUnitDetailPage } from '../pages/FieldUnitDetailPage'
 import { PrintChecklistPage } from '../pages/PrintChecklistPage'
@@ -33,14 +32,6 @@ export function AppRouter() {
             element={
               <RoleRoute minRole="admin">
                 <UnitTypesPage />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="/default-sets"
-            element={
-              <RoleRoute minRole="admin">
-                <DefaultSetsPage />
               </RoleRoute>
             }
           />

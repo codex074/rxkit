@@ -48,6 +48,8 @@ export function DefaultSetsPage() {
       const set = await getOrCreateDefaultSet(unitTypeId, ut?.name ?? '', user.uid)
       setDefaultSet(set)
       setItems(await getDefaultSetItems(set.id))
+    } catch {
+      toast.error('โหลดชุดยาไม่สำเร็จ กรุณาลองใหม่')
     } finally {
       setLoading(false)
     }

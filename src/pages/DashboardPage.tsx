@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Pill, Building2, ClipboardList, Settings, ArrowRight, Calendar, MapPin, User } from 'lucide-react'
+import { Plus, Pill, Building2, Settings, ArrowRight, Calendar, MapPin, User, Sparkles } from 'lucide-react'
 import { listRecentFieldUnits } from '../firebase/firestore'
 import { useAuthContext } from '../context/AuthContext'
 import { useRole } from '../hooks/useRole'
-import { Card } from '../components/ui/Card'
 import { Badge } from '../components/ui/Badge'
 import { Spinner } from '../components/ui/Spinner'
 import { formatThaiDate } from '../utils/date'
@@ -22,6 +21,18 @@ const statusVariant: Record<string, 'default' | 'success' | 'warning' | 'error' 
   saved: 'info',
   printed: 'success',
   cancelled: 'error',
+}
+
+const unitTypeColors: Record<string, string> = {
+  'ปฐมพยาบาล': 'bg-emerald-500',
+  'รับเสด็จ':   'bg-violet-500',
+  'น้ำท่วม':    'bg-sky-500',
+  'พอ.สว.':     'bg-amber-500',
+  'อื่นๆ':      'bg-slate-400',
+}
+
+function unitColor(name: string) {
+  return unitTypeColors[name] ?? 'bg-primary'
 }
 
 export function DashboardPage() {
@@ -43,20 +54,24 @@ export function DashboardPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-ink">หน้าหลัก</h1>
         <p className="text-sm text-muted mt-1">
-          ยินดีต้อนรับ {user?.displayName ?? user?.username}
+          ยินดีต้อนรับ, <span className="font-medium text-ink">{user?.displayName ?? user?.username}</span>
         </p>
       </div>
 
-      {/* Quick Action */}
+      {/* Quick Action banner */}
       <Link to="/field-units/create" className="block mb-8">
-        <div className="bg-primary rounded-xl p-6 text-white flex items-center justify-between hover:bg-primary-active transition-colors">
-          <div>
-            <p className="text-sm font-medium opacity-80">สร้างรายการใหม่</p>
-            <p className="text-xl font-bold mt-0.5">จัดยาออกหน่วย</p>
+        <div className="relative overflow-hidden rounded-2xl px-7 py-6 flex items-center justify-between"
+          style={{ background: 'linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)' }}>
+          {/* decorative circles */}
+          <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-white/10" />
+          <div className="absolute -bottom-8 right-20 w-24 h-24 rounded-full bg-white/10" />
+          <div className="relative">
+            <p className="text-sm font-medium text-blue-100 mb-0.5">สร้างรายการใหม่</p>
+            <p className="text-2xl font-bold text-white">จัดยาออกหน่วย</p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-              <Plus size={20} />
+          <div className="relative flex items-center gap-3">
+            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+              <Plus size={24} className="text-white" />
             </div>
           </div>
         </div>
@@ -64,73 +79,58 @@ export function DashboardPage() {
 
       {/* Quick links */}
       {isAdmin && (
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-4 mb-8">
           <Link to="/drugs">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-surface-soft rounded-lg flex items-center justify-center">
-                  <Pill size={18} className="text-muted" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-ink">รายการยา</p>
-                  <p className="text-xs text-muted">จัดการยาทั้งหมด</p>
-                </div>
-                <ArrowRight size={14} className="text-muted ml-auto" />
+            <div className="bg-white border border-hairline rounded-xl p-4 hover:shadow-md transition-all hover:-translate-y-0.5 cursor-pointer group flex items-center gap-4">
+              <div className="w-11 h-11 bg-emerald-50 rounded-xl flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+                <Pill size={20} className="text-emerald-600" />
               </div>
-            </Card>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-ink">รายการยา</p>
+                <p className="text-xs text-muted">จัดการยาทั้งหมด</p>
+              </div>
+              <ArrowRight size={16} className="text-muted group-hover:text-ink transition-colors" />
+            </div>
           </Link>
           <Link to="/unit-types">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-surface-soft rounded-lg flex items-center justify-center">
-                  <Building2 size={18} className="text-muted" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-ink">ประเภทหน่วย</p>
-                  <p className="text-xs text-muted">จัดการหน่วยออกปฏิบัติ</p>
-                </div>
-                <ArrowRight size={14} className="text-muted ml-auto" />
+            <div className="bg-white border border-hairline rounded-xl p-4 hover:shadow-md transition-all hover:-translate-y-0.5 cursor-pointer group flex items-center gap-4">
+              <div className="w-11 h-11 bg-violet-50 rounded-xl flex items-center justify-center group-hover:bg-violet-100 transition-colors">
+                <Building2 size={20} className="text-violet-600" />
               </div>
-            </Card>
-          </Link>
-          <Link to="/default-sets">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-surface-soft rounded-lg flex items-center justify-center">
-                  <ClipboardList size={18} className="text-muted" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-ink">ชุดยาเริ่มต้น</p>
-                  <p className="text-xs text-muted">กำหนดยาประจำหน่วย</p>
-                </div>
-                <ArrowRight size={14} className="text-muted ml-auto" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-ink">ประเภทหน่วย</p>
+                <p className="text-xs text-muted">จัดการหน่วย + ชุดยา</p>
               </div>
-            </Card>
+              <ArrowRight size={16} className="text-muted group-hover:text-ink transition-colors" />
+            </div>
           </Link>
         </div>
       )}
 
       {/* Recent Records */}
       <div>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2 mb-4">
+          <Sparkles size={16} className="text-primary" />
           <h2 className="text-base font-semibold text-ink">รายการล่าสุด</h2>
         </div>
 
         {loading ? (
           <div className="flex justify-center py-12"><Spinner size={24} /></div>
         ) : records.length === 0 ? (
-          <Card>
-            <div className="text-center py-8">
-              <Settings size={32} className="text-muted mx-auto mb-3" />
-              <p className="text-sm font-medium text-ink">ยังไม่มีรายการ</p>
-              <p className="text-xs text-muted mt-1">กดปุ่ม "จัดยาออกหน่วย" เพื่อสร้างรายการแรก</p>
+          <div className="bg-white border border-hairline rounded-xl p-8 text-center">
+            <div className="w-12 h-12 bg-surface-soft rounded-xl flex items-center justify-center mx-auto mb-3">
+              <Settings size={22} className="text-muted" />
             </div>
-          </Card>
+            <p className="text-sm font-medium text-ink">ยังไม่มีรายการ</p>
+            <p className="text-xs text-muted mt-1">กดปุ่ม "จัดยาออกหน่วย" เพื่อสร้างรายการแรก</p>
+          </div>
         ) : (
           <div className="flex flex-col gap-2">
             {records.map(r => (
               <Link key={r.id} to={`/field-units/${r.id}`}>
-                <div className="bg-white border border-hairline rounded-lg px-5 py-4 hover:shadow-sm transition-shadow flex items-center gap-4">
+                <div className="bg-white border border-hairline rounded-xl px-5 py-4 hover:shadow-sm hover:border-primary/30 transition-all flex items-center gap-4 group">
+                  {/* color dot */}
+                  <div className={`w-2 h-10 rounded-full flex-shrink-0 ${unitColor(r.unitTypeName)}`} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="text-sm font-semibold text-ink truncate">{r.unitTypeName}</p>
@@ -140,26 +140,26 @@ export function DashboardPage() {
                     </div>
                     <div className="flex items-center gap-4 text-xs text-muted">
                       <span className="flex items-center gap-1">
-                        <Calendar size={12} />
+                        <Calendar size={11} />
                         {formatThaiDate(r.eventDate)}
                       </span>
                       {r.location && (
                         <span className="flex items-center gap-1">
-                          <MapPin size={12} />
+                          <MapPin size={11} />
                           {r.location}
                         </span>
                       )}
                       <span className="flex items-center gap-1">
-                        <User size={12} />
+                        <User size={11} />
                         {r.responsiblePerson}
                       </span>
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="text-xs text-muted">ปีงบประมาณ</p>
-                    <p className="text-sm font-semibold text-ink">{r.fiscalYear}</p>
+                    <p className="text-sm font-bold text-ink">{r.fiscalYear}</p>
                   </div>
-                  <ArrowRight size={16} className="text-muted flex-shrink-0" />
+                  <ArrowRight size={15} className="text-muted group-hover:text-primary transition-colors flex-shrink-0" />
                 </div>
               </Link>
             ))}

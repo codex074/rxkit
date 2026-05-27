@@ -20,9 +20,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           className={`
             h-10 px-3.5 rounded-md border border-hairline bg-white text-ink text-sm
             placeholder:text-muted-soft
-            focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink
+            focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30
             disabled:bg-surface-soft disabled:text-muted disabled:cursor-not-allowed
-            ${error ? 'border-error focus:border-error focus:ring-error' : ''}
+            ${error ? 'border-error focus:border-error focus:ring-error/30' : ''}
             ${className}
           `}
           {...props}
@@ -54,7 +54,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           className={`
             px-3.5 py-2.5 rounded-md border border-hairline bg-white text-ink text-sm
             placeholder:text-muted-soft
-            focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink
+            focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30
             disabled:bg-surface-soft disabled:text-muted disabled:cursor-not-allowed
             resize-none
             ${error ? 'border-error focus:border-error focus:ring-error' : ''}

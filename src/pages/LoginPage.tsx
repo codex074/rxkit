@@ -36,12 +36,14 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-soft flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4"
+      style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #f5f3ff 100%)' }}>
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8 gap-3">
-          <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-sm">
-            <Pill size={24} className="text-white" />
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shadow-primary/25"
+            style={{ background: 'linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)' }}>
+            <Pill size={26} className="text-white" />
           </div>
           <div className="text-center">
             <h1 className="text-xl font-bold text-ink">ยาออกหน่วย</h1>
@@ -50,7 +52,7 @@ export function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-white border border-hairline rounded-xl shadow-sm p-6">
+        <div className="bg-white border border-hairline rounded-2xl shadow-xl shadow-slate-200/60 p-6">
           {!configured && (
             <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
               <p className="text-xs text-yellow-800 font-medium">
