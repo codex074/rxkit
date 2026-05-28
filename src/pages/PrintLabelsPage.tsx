@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Printer, ArrowLeft } from 'lucide-react'
 import { getFieldUnitById, getFieldUnitItems, getAppSettings } from '../firebase/firestore'
@@ -7,6 +7,7 @@ import { formatThaiDate } from '../utils/date'
 import type { FieldUnit, FieldUnitItem } from '../types/fieldUnit'
 import type { AppSettings } from '../types/settings'
 import { DEFAULT_SETTINGS } from '../types/settings'
+import { toast } from 'sonner'
 
 export function PrintLabelsPage() {
   const { id } = useParams<{ id: string }>()
@@ -14,6 +15,7 @@ export function PrintLabelsPage() {
   const [items, setItems] = useState<FieldUnitItem[]>([])
   const [settings, setSettings] = useState<AppSettings>({ ...DEFAULT_SETTINGS, updatedAt: new Date() })
   const [loading, setLoading] = useState(true)
+  const didAutoPrint = useRef(false)
 
   useEffect(() => {
     if (!id) return
@@ -25,19 +27,42 @@ export function PrintLabelsPage() {
     })
   }, [id])
 
+  useEffect(() => {
+    if (loading || !fieldUnit || didAutoPrint.current) return
+    didAutoPrint.current = true
+    toast.dismiss()
+    const timer = window.setTimeout(() => window.print(), 250)
+    return () => window.clearTimeout(timer)
+  }, [loading, fieldUnit])
+
   if (loading) return <div className="flex justify-center py-16"><Spinner size={24} /></div>
   if (!fieldUnit) return <div className="p-8 text-muted text-sm">ไม่พบรายการ</div>
 
   const {
     labelWidthMm,
     labelHeightMm,
-    labelColumns,
-    labelGapMm,
-    labelMarginTopMm,
-    labelMarginLeftMm,
     labelFontSizePx,
     hospitalName,
   } = settings
+
+  const printPageSize = `
+    @media print {
+      @page {
+        size: ${labelWidthMm}mm ${labelHeightMm}mm;
+        margin: 0;
+      }
+
+      html,
+      body,
+      #root {
+        width: ${labelWidthMm}mm;
+        min-height: ${labelHeightMm}mm;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+      }
+    }
+  `
 
   const labelStyle: React.CSSProperties = {
     width: `${labelWidthMm}mm`,
@@ -52,16 +77,18 @@ export function PrintLabelsPage() {
     fontFamily: 'Sarabun, TH SarabunPSK, Arial, sans-serif',
   }
 
-  const gridStyle: React.CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: `repeat(${labelColumns}, ${labelWidthMm}mm)`,
-    gap: `${labelGapMm}mm`,
-    marginTop: `${labelMarginTopMm}mm`,
-    marginLeft: `${labelMarginLeftMm}mm`,
+  const previewStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '8mm',
+    padding: '16px',
   }
 
   return (
     <>
+      <style>{printPageSize}</style>
+
       {/* Toolbar */}
       <div className="no-print flex items-center gap-3 p-4 border-b border-hairline bg-white">
         <Link to={`/field-units/${id}`} className="flex items-center gap-1.5 text-sm text-muted hover:text-ink">
@@ -70,7 +97,7 @@ export function PrintLabelsPage() {
         </Link>
         <div className="flex-1" />
         <div className="text-xs text-muted">
-          ฉลากขนาด {labelWidthMm}×{labelHeightMm}mm · {labelColumns} คอลัมน์
+          ฉลากขนาด {labelWidthMm}×{labelHeightMm}mm · 1 รายการยา = 1 ใบ
         </div>
         <button
           onClick={() => window.print()}
@@ -81,10 +108,10 @@ export function PrintLabelsPage() {
         </button>
       </div>
 
-      {/* Label grid */}
-      <div style={gridStyle}>
+      {/* One label page per medicine item */}
+      <div className="label-pages" style={previewStyle}>
         {items.map((item) => (
-          <div key={item.id} style={labelStyle}>
+          <div key={item.id} className="label-page" style={labelStyle}>
             {/* Hospital name */}
             <div style={{ fontWeight: 700, fontSize: `${labelFontSizePx + 1}px`, borderBottom: '1px solid #ccc', paddingBottom: '1mm', marginBottom: '1mm' }}>
               {hospitalName}
@@ -101,7 +128,7 @@ export function PrintLabelsPage() {
             )}
             {/* Instruction */}
             {item.instructionSnapshot && (
-              <div style={{ marginTop: '1mm' }}>
+              <div style={{ marginTop: '1mm', whiteSpace: 'pre-line', overflowWrap: 'anywhere', lineHeight: 1.25 }}>
                 {item.instructionSnapshot}
               </div>
             )}

@@ -18,7 +18,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           id={id}
           ref={ref}
           className={`
-            h-10 px-3.5 rounded-md border border-hairline bg-white text-ink text-sm
+            h-10 px-3.5 rounded-md border border-hairline bg-white/95 text-ink text-sm
             placeholder:text-muted-soft
             focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30
             disabled:bg-surface-soft disabled:text-muted disabled:cursor-not-allowed
@@ -52,7 +52,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           id={id}
           ref={ref}
           className={`
-            px-3.5 py-2.5 rounded-md border border-hairline bg-white text-ink text-sm
+            px-3.5 py-2.5 rounded-md border border-hairline bg-white/95 text-ink text-sm
             placeholder:text-muted-soft
             focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30
             disabled:bg-surface-soft disabled:text-muted disabled:cursor-not-allowed

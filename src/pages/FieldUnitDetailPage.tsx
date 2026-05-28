@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { Printer, FileText, ArrowLeft, Calendar, MapPin, User, Hash } from 'lucide-react'
-import { getFieldUnitById, getFieldUnitItems, updateFieldUnitStatus, writeActivityLog } from '../firebase/firestore'
+import { Printer, FileText, ArrowLeft, Calendar, MapPin, User, Hash, Pencil, Trash2 } from 'lucide-react'
+import { getFieldUnitById, getFieldUnitItems, updateFieldUnitStatus, deleteFieldUnit, writeActivityLog } from '../firebase/firestore'
 import { useAuthContext } from '../context/AuthContext'
+import { useRole } from '../hooks/useRole'
 import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
 import { Card } from '../components/ui/Card'
@@ -22,9 +23,11 @@ export function FieldUnitDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { user } = useAuthContext()
+  const { isStaff } = useRole(user)
   const [fieldUnit, setFieldUnit] = useState<FieldUnit | null>(null)
   const [items, setItems] = useState<FieldUnitItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -39,7 +42,6 @@ export function FieldUnitDetailPage() {
     if (!fieldUnit || !user) return
     await updateFieldUnitStatus(fieldUnit.id, 'printed')
     await writeActivityLog('print_checklist', `พิมพ์ใบตรวจสอบ ${fieldUnit.unitTypeName}`, user.uid, user.username)
-    toast.success('เปิดหน้าพิมพ์ใบตรวจสอบ')
     navigate(`/field-units/${id}/print-checklist`)
   }
 
@@ -47,15 +49,31 @@ export function FieldUnitDetailPage() {
     if (!fieldUnit || !user) return
     await updateFieldUnitStatus(fieldUnit.id, 'printed')
     await writeActivityLog('print_labels', `พิมพ์ฉลากยา ${fieldUnit.unitTypeName}`, user.uid, user.username)
-    toast.success('เปิดหน้าพิมพ์ฉลาก')
     navigate(`/field-units/${id}/print-labels`)
+  }
+
+  async function handleDelete() {
+    if (!fieldUnit || !user) return
+    const confirmed = window.confirm(`ลบรายการ "${fieldUnit.unitTypeName}" วันที่ ${formatThaiDate(fieldUnit.eventDate)} ใช่หรือไม่?`)
+    if (!confirmed) return
+    setDeleting(true)
+    try {
+      await deleteFieldUnit(fieldUnit.id)
+      await writeActivityLog('delete_field_unit', `ลบรายการออกหน่วย ${fieldUnit.unitTypeName}`, user.uid, user.username)
+      toast.success('ลบรายการสำเร็จ')
+      navigate('/dashboard')
+    } catch {
+      toast.error('ลบรายการไม่สำเร็จ')
+    } finally {
+      setDeleting(false)
+    }
   }
 
   if (loading) return <div className="flex justify-center py-16"><Spinner size={24} /></div>
   if (!fieldUnit) return <div className="p-8 text-muted text-sm">ไม่พบรายการ</div>
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-6 lg:p-8 max-w-6xl mx-auto">
       {/* Back */}
       <Link to="/dashboard" className="flex items-center gap-1.5 text-sm text-muted hover:text-ink mb-6 w-fit">
         <ArrowLeft size={14} />
@@ -63,36 +81,50 @@ export function FieldUnitDetailPage() {
       </Link>
 
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
+      <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-5 mb-6">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
             <h1 className="text-2xl font-bold text-ink">{fieldUnit.unitTypeName}</h1>
-            <Badge variant={statusVariant[fieldUnit.status] ?? 'default'}>
-              {statusLabel[fieldUnit.status] ?? fieldUnit.status}
-            </Badge>
+            {fieldUnit.status !== 'printed' && (
+              <Badge variant={statusVariant[fieldUnit.status] ?? 'default'}>
+                {statusLabel[fieldUnit.status] ?? fieldUnit.status}
+              </Badge>
+            )}
           </div>
-          <div className="flex items-center gap-4 text-sm text-muted">
-            <span className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted">
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
               <Calendar size={14} />
               {formatThaiDate(fieldUnit.eventDate)}
             </span>
             {fieldUnit.location && (
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 min-w-0">
                 <MapPin size={14} />
-                {fieldUnit.location}
+                <span className="truncate">{fieldUnit.location}</span>
               </span>
             )}
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
               <User size={14} />
               {fieldUnit.responsiblePerson}
             </span>
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
               <Hash size={14} />
               ปีงบประมาณ {fieldUnit.fiscalYear}
             </span>
           </div>
         </div>
-        <div className="flex gap-2 no-print">
+        <div className="flex flex-wrap gap-3 no-print xl:justify-end xl:max-w-[560px]">
+          {isStaff && (
+            <>
+              <Button variant="secondary" onClick={() => navigate(`/field-units/${fieldUnit.id}/edit`)}>
+                <Pencil size={16} />
+                แก้ไข
+              </Button>
+              <Button variant="danger" onClick={handleDelete} loading={deleting}>
+                <Trash2 size={16} />
+                ลบ
+              </Button>
+            </>
+          )}
           <Button variant="secondary" onClick={handlePrintChecklist}>
             <FileText size={16} />
             พิมพ์ใบตรวจสอบ

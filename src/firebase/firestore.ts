@@ -12,6 +12,7 @@ import {
   getDocs,
   addDoc,
   deleteDoc,
+  writeBatch,
   serverTimestamp,
   Timestamp,
   type DocumentData,
@@ -401,6 +402,83 @@ export async function createFieldUnit(
   return unitRef.id
 }
 
+export async function updateFieldUnit(
+  fieldUnitId: string,
+  formData: FieldUnitFormData,
+  items: FieldUnitItemDraft[],
+  fiscalYear: number
+): Promise<void> {
+  const db = getDb()
+  const existingItemsQuery = query(
+    collection(db, 'fieldUnitItems'),
+    where('fieldUnitId', '==', fieldUnitId)
+  )
+  const existingItems = await getDocs(existingItemsQuery)
+  const batch = writeBatch(db)
+
+  batch.update(doc(db, 'fieldUnits', fieldUnitId), {
+    fiscalYear,
+    unitTypeId: formData.unitTypeId,
+    unitTypeName: formData.unitTypeName,
+    eventDate: formData.eventDate,
+    location: formData.location,
+    responsiblePerson: formData.responsiblePerson,
+    numberOfSets: formData.numberOfSets,
+    status: 'saved',
+    note: formData.note,
+    updatedAt: serverTimestamp(),
+  })
+
+  existingItems.docs.forEach(itemDoc => {
+    batch.delete(doc(db, 'fieldUnitItems', itemDoc.id))
+  })
+
+  items.forEach((item, idx) => {
+    const itemRef = doc(collection(db, 'fieldUnitItems'))
+    batch.set(itemRef, {
+      fieldUnitId,
+      drugId: item.drugId,
+      drugCodeSnapshot: item.drugCodeSnapshot,
+      drugNameSnapshot: item.drugNameSnapshot,
+      genericNameSnapshot: item.genericNameSnapshot,
+      tradeNameSnapshot: item.tradeNameSnapshot,
+      strengthSnapshot: item.strengthSnapshot,
+      dosageFormSnapshot: item.dosageFormSnapshot,
+      unitSnapshot: item.unitSnapshot,
+      pricePerUnitSnapshot: item.pricePerUnitSnapshot,
+      instructionSnapshot: item.instructionSnapshot,
+      warningSnapshot: item.warningSnapshot,
+      labelNoteSnapshot: item.labelNoteSnapshot,
+      qtyPerSet: item.qtyPerSet,
+      numberOfSets: formData.numberOfSets,
+      totalQty: item.qtyPerSet * formData.numberOfSets,
+      note: item.note,
+      sortOrder: item.sortOrder ?? idx,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    })
+  })
+
+  await batch.commit()
+}
+
+export async function deleteFieldUnit(fieldUnitId: string): Promise<void> {
+  const db = getDb()
+  const existingItemsQuery = query(
+    collection(db, 'fieldUnitItems'),
+    where('fieldUnitId', '==', fieldUnitId)
+  )
+  const existingItems = await getDocs(existingItemsQuery)
+  const batch = writeBatch(db)
+
+  existingItems.docs.forEach(itemDoc => {
+    batch.delete(doc(db, 'fieldUnitItems', itemDoc.id))
+  })
+  batch.delete(doc(db, 'fieldUnits', fieldUnitId))
+
+  await batch.commit()
+}
+
 export async function getFieldUnitById(fieldUnitId: string): Promise<FieldUnit | null> {
   const db = getDb()
   const snap = await getDoc(doc(db, 'fieldUnits', fieldUnitId))
@@ -424,6 +502,33 @@ export async function listRecentFieldUnits(limitCount: number = 20): Promise<Fie
   const q = query(collection(db, 'fieldUnits'), orderBy('createdAt', 'desc'), limit(limitCount))
   const snap = await getDocs(q)
   return snap.docs.map(d => docToFieldUnit(d.id, d.data()))
+}
+
+export async function listFieldUnitFiscalYears(): Promise<number[]> {
+  const db = getDb()
+  const q = query(collection(db, 'fieldUnits'), orderBy('fiscalYear', 'desc'))
+  const snap = await getDocs(q)
+  const years = new Set<number>()
+
+  snap.docs.forEach(d => {
+    const fiscalYear = d.data().fiscalYear
+    if (typeof fiscalYear === 'number' && Number.isFinite(fiscalYear)) {
+      years.add(fiscalYear)
+    }
+  })
+
+  return Array.from(years).sort((a, b) => b - a)
+}
+
+export async function listFieldUnitsByFiscalYear(fiscalYear: number, limitCount: number = 20): Promise<FieldUnit[]> {
+  const db = getDb()
+  const q = query(collection(db, 'fieldUnits'), where('fiscalYear', '==', fiscalYear))
+  const snap = await getDocs(q)
+
+  return snap.docs
+    .map(d => docToFieldUnit(d.id, d.data()))
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, limitCount)
 }
 
 export async function updateFieldUnitStatus(fieldUnitId: string, status: string): Promise<void> {

@@ -20,7 +20,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           id={id}
           ref={ref}
           className={`
-            h-10 px-3.5 rounded-md border border-hairline bg-white text-ink text-sm
+            h-10 px-3.5 rounded-md border border-hairline bg-white/95 text-ink text-sm
             focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30
             disabled:bg-surface-soft disabled:text-muted disabled:cursor-not-allowed
             ${error ? 'border-error focus:border-error focus:ring-error' : ''}

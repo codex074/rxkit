@@ -43,6 +43,14 @@ export function AppRouter() {
               </RoleRoute>
             }
           />
+          <Route
+            path="/field-units/:id/edit"
+            element={
+              <RoleRoute minRole="staff">
+                <CreateFieldUnitPage />
+              </RoleRoute>
+            }
+          />
           <Route path="/field-units/:id" element={<FieldUnitDetailPage />} />
           <Route path="/field-units/:id/print-checklist" element={<PrintChecklistPage />} />
           <Route path="/field-units/:id/print-labels" element={<PrintLabelsPage />} />

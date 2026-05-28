@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Plus, Trash2, Search } from 'lucide-react'
 import {
   getActiveUnitTypes,
@@ -7,6 +7,9 @@ import {
   getDefaultSetItems,
   getActiveDrugs,
   createFieldUnit,
+  updateFieldUnit,
+  getFieldUnitById,
+  getFieldUnitItems,
   writeActivityLog,
 } from '../firebase/firestore'
 import { useAuthContext } from '../context/AuthContext'
@@ -24,7 +27,9 @@ import type { FieldUnitFormData, FieldUnitItemDraft } from '../types/fieldUnit'
 
 export function CreateFieldUnitPage() {
   const navigate = useNavigate()
+  const { id: editId } = useParams<{ id: string }>()
   const { user } = useAuthContext()
+  const isEditMode = Boolean(editId)
 
   const [unitTypes, setUnitTypes] = useState<UnitType[]>([])
   const [drugs, setDrugs] = useState<Drug[]>([])
@@ -50,14 +55,52 @@ export function CreateFieldUnitPage() {
   const searchRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    Promise.all([getActiveUnitTypes(), getActiveDrugs()])
-      .then(([ut, dr]) => {
+    Promise.all([
+      getActiveUnitTypes(),
+      getActiveDrugs(),
+      editId ? getFieldUnitById(editId) : Promise.resolve(null),
+      editId ? getFieldUnitItems(editId) : Promise.resolve([]),
+    ])
+      .then(([ut, dr, existingFieldUnit, existingItems]) => {
         setUnitTypes(ut)
         setDrugs(dr)
+        if (editId) {
+          if (!existingFieldUnit) {
+            toast.error('ไม่พบรายการที่ต้องการแก้ไข')
+            navigate('/dashboard')
+            return
+          }
+          setForm({
+            unitTypeId: existingFieldUnit.unitTypeId,
+            unitTypeName: existingFieldUnit.unitTypeName,
+            eventDate: existingFieldUnit.eventDate,
+            location: existingFieldUnit.location,
+            responsiblePerson: existingFieldUnit.responsiblePerson,
+            numberOfSets: existingFieldUnit.numberOfSets,
+            note: existingFieldUnit.note,
+          })
+          setItems(existingItems.map((item, idx) => ({
+            drugId: item.drugId,
+            drugCodeSnapshot: item.drugCodeSnapshot,
+            drugNameSnapshot: item.drugNameSnapshot,
+            genericNameSnapshot: item.genericNameSnapshot,
+            tradeNameSnapshot: item.tradeNameSnapshot,
+            strengthSnapshot: item.strengthSnapshot,
+            dosageFormSnapshot: item.dosageFormSnapshot,
+            unitSnapshot: item.unitSnapshot,
+            pricePerUnitSnapshot: item.pricePerUnitSnapshot,
+            instructionSnapshot: item.instructionSnapshot,
+            warningSnapshot: item.warningSnapshot,
+            labelNoteSnapshot: item.labelNoteSnapshot,
+            qtyPerSet: item.qtyPerSet,
+            note: item.note,
+            sortOrder: item.sortOrder ?? idx,
+          })))
+        }
       })
       .catch(() => toast.error('โหลดข้อมูลไม่สำเร็จ'))
       .finally(() => setLoadingInit(false))
-  }, [])
+  }, [editId, navigate])
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -179,10 +222,17 @@ export function CreateFieldUnitPage() {
     setSaving(true)
     try {
       const fiscalYear = getThaiFiscalYear(form.eventDate)
-      const id = await createFieldUnit(form, items, user.uid, user.displayName, fiscalYear)
-      await writeActivityLog('create_field_unit', `จัดยาออกหน่วย ${form.unitTypeName}`, user.uid, user.username)
-      toast.success('บันทึกรายการสำเร็จ')
-      navigate(`/field-units/${id}`)
+      if (editId) {
+        await updateFieldUnit(editId, form, items, fiscalYear)
+        await writeActivityLog('update_field_unit', `แก้ไขรายการออกหน่วย ${form.unitTypeName}`, user.uid, user.username)
+        toast.success('แก้ไขรายการสำเร็จ')
+        navigate(`/field-units/${editId}`)
+      } else {
+        const id = await createFieldUnit(form, items, user.uid, user.displayName, fiscalYear)
+        await writeActivityLog('create_field_unit', `จัดยาออกหน่วย ${form.unitTypeName}`, user.uid, user.username)
+        toast.success('บันทึกรายการสำเร็จ')
+        navigate(`/field-units/${id}`)
+      }
     } catch {
       toast.error('บันทึกไม่สำเร็จ กรุณาลองใหม่')
     } finally {
@@ -195,10 +245,12 @@ export function CreateFieldUnitPage() {
   const totalAvailable = drugs.filter(d => !usedDrugIds.has(d.id)).length
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 lg:p-8 max-w-6xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-ink">จัดยาออกหน่วย</h1>
-        <p className="text-sm text-muted mt-0.5">สร้างรายการจัดเตรียมยาสำหรับหน่วยออกปฏิบัติ</p>
+        <h1 className="text-xl font-bold text-ink">{isEditMode ? 'แก้ไขรายการจัดยาออกหน่วย' : 'จัดยาออกหน่วย'}</h1>
+        <p className="text-sm text-muted mt-0.5">
+          {isEditMode ? 'แก้ไขข้อมูลและรายการยาที่บันทึกไว้' : 'สร้างรายการจัดเตรียมยาสำหรับหน่วยออกปฏิบัติ'}
+        </p>
       </div>
 
       {/* Form fields */}
@@ -307,7 +359,7 @@ export function CreateFieldUnitPage() {
                         min="1"
                         value={item.qtyPerSet}
                         onChange={e => handleQtyChange(idx, e.target.value)}
-                        className="w-20 text-center border border-hairline rounded-md px-2 py-1 text-sm focus:outline-none focus:border-ink"
+                        className="w-20 text-center border border-hairline rounded-md px-2 py-1 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30"
                       />
                     </td>
                     <td className="px-3 py-2.5 text-center font-semibold text-ink">
@@ -320,14 +372,14 @@ export function CreateFieldUnitPage() {
                         value={item.note}
                         onChange={e => handleItemNoteChange(idx, e.target.value)}
                         placeholder="หมายเหตุ..."
-                        className="w-full border border-hairline rounded-md px-2 py-1 text-xs focus:outline-none focus:border-ink bg-transparent placeholder:text-muted-soft"
+                        className="w-full border border-hairline rounded-md px-2 py-1 text-xs focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 bg-transparent placeholder:text-muted-soft"
                       />
                     </td>
                     <td className="px-3 py-2.5 text-center">
                       <button
                         type="button"
                         onClick={() => handleRemoveItem(idx)}
-                        className="p-1.5 rounded text-muted hover:text-error hover:bg-red-50 transition-colors"
+                        className="p-1.5 rounded text-muted hover:text-error hover:bg-error-bg transition-colors"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -350,7 +402,7 @@ export function CreateFieldUnitPage() {
               value={drugSearch}
               onChange={e => { setDrugSearch(e.target.value); setSearchOpen(true) }}
               onFocus={() => setSearchOpen(true)}
-              className="w-full h-10 pl-9 pr-3 rounded-md border border-hairline bg-white text-sm text-ink focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink placeholder:text-muted-soft"
+              className="w-full h-10 pl-9 pr-3 rounded-md border border-hairline bg-white text-sm text-ink focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 placeholder:text-muted-soft"
             />
           </div>
 
@@ -390,8 +442,12 @@ export function CreateFieldUnitPage() {
 
       {/* Actions */}
       <div className="flex justify-end gap-3">
-        <Button variant="secondary" onClick={() => navigate('/dashboard')}>ยกเลิก</Button>
-        <Button onClick={handleSave} loading={saving}>บันทึกรายการ</Button>
+        <Button variant="secondary" onClick={() => navigate(isEditMode && editId ? `/field-units/${editId}` : '/dashboard')}>
+          ยกเลิก
+        </Button>
+        <Button onClick={handleSave} loading={saving}>
+          {isEditMode ? 'บันทึกการแก้ไข' : 'บันทึกรายการ'}
+        </Button>
       </div>
     </div>
   )

@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">RxKit</title>
+  <desc id="desc">RxKit cute medicine kit mascot logo, Pixar-inspired</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c8f1e0"/>
+      <stop offset="55%" stop-color="#8fd9bf"/>
+      <stop offset="100%" stop-color="#5cc1a2"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e3f2eb"/>
+    </linearGradient>
+    <linearGradient id="clasp" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#69c2a3"/>
+      <stop offset="100%" stop-color="#3f9d7d"/>
+    </linearGradient>
+    <linearGradient id="handle" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#86d6ba"/>
+      <stop offset="100%" stop-color="#4ba88a"/>
+    </linearGradient>
+    <linearGradient id="cross" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff8a8a"/>
+      <stop offset="100%" stop-color="#e23a45"/>
+    </linearGradient>
+    <radialGradient id="cheek" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#ff7a8a" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#ff7a8a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="0.5" cy="0.4" r="0.6">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f1f9f5"/>
+    </radialGradient>
+    <clipPath id="bodyClip">
+      <rect x="100" y="192" width="312" height="232" rx="40"/>
+    </clipPath>
+  </defs>
+
+  <!-- Sky background -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- Soft clouds -->
+  <ellipse cx="86" cy="108" rx="48" ry="18" fill="#ffffff" opacity="0.5"/>
+  <ellipse cx="120" cy="118" rx="28" ry="11" fill="#ffffff" opacity="0.5"/>
+  <ellipse cx="420" cy="148" rx="56" ry="20" fill="#ffffff" opacity="0.45"/>
+  <ellipse cx="384" cy="156" rx="24" ry="10" fill="#ffffff" opacity="0.45"/>
+  <ellipse cx="60" cy="430" rx="40" ry="14" fill="#ffffff" opacity="0.32"/>
+
+  <!-- Ground shadow under kit -->
+  <ellipse cx="256" cy="450" rx="172" ry="14" fill="#000000" opacity="0.18"/>
+
+  <!-- Handle (back) -->
+  <path d="M196 196 Q196 130 256 130 Q316 130 316 196"
+        stroke="url(#handle)" stroke-width="26" fill="none" stroke-linecap="round"/>
+  <!-- Handle highlight -->
+  <path d="M206 188 Q206 142 256 142"
+        stroke="#ffffff" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.55"/>
+
+  <!-- Kit body -->
+  <g clip-path="url(#bodyClip)">
+    <rect x="100" y="192" width="312" height="232" fill="url(#body)"/>
+    <!-- Top clasp strip -->
+    <rect x="100" y="192" width="312" height="58" fill="url(#clasp)"/>
+    <!-- Clasp seam -->
+    <rect x="100" y="246" width="312" height="4" fill="#000000" opacity="0.14"/>
+    <!-- Tiny clasp buckle on left/right -->
+    <rect x="138" y="218" width="16" height="10" rx="3" fill="#ffffff" opacity="0.8"/>
+    <rect x="358" y="218" width="16" height="10" rx="3" fill="#ffffff" opacity="0.8"/>
+    <!-- Side highlight on body -->
+    <path d="M118 260 Q124 256 134 256 L134 408 Q126 414 118 414 Z" fill="#ffffff" opacity="0.55"/>
+    <!-- Soft bottom shading -->
+    <rect x="100" y="396" width="312" height="28" fill="#000000" opacity="0.05"/>
+  </g>
+
+  <!-- Subtle body outline -->
+  <rect x="100" y="192" width="312" height="232" rx="40" fill="none" stroke="#000000" stroke-width="2" opacity="0.08"/>
+
+  <!-- White badge halo -->
+  <circle cx="256" cy="352" r="66" fill="url(#halo)"/>
+  <circle cx="256" cy="352" r="66" fill="none" stroke="#000000" stroke-width="2" opacity="0.06"/>
+
+  <!-- Red cross -->
+  <rect x="220" y="336" width="72" height="32" rx="7" fill="url(#cross)"/>
+  <rect x="240" y="316" width="32" height="72" rx="7" fill="url(#cross)"/>
+  <!-- Cross highlight -->
+  <rect x="245" y="320" width="9" height="22" rx="4" fill="#ffffff" opacity="0.55"/>
+  <!-- Cross inner shadow -->
+  <rect x="220" y="362" width="72" height="6" rx="3" fill="#000000" opacity="0.1"/>
+
+  <!-- Cheeks (blush) -->
+  <ellipse cx="158" cy="280" rx="22" ry="12" fill="url(#cheek)"/>
+  <ellipse cx="354" cy="280" rx="22" ry="12" fill="url(#cheek)"/>
+
+  <!-- Eyes (on clasp, peeking) -->
+  <ellipse cx="190" cy="220" rx="14" ry="16" fill="#ffffff"/>
+  <ellipse cx="322" cy="220" rx="14" ry="16" fill="#ffffff"/>
+  <ellipse cx="192" cy="223" rx="9" ry="11" fill="#1a2530"/>
+  <ellipse cx="324" cy="223" rx="9" ry="11" fill="#1a2530"/>
+  <!-- Eye sparkles -->
+  <circle cx="195" cy="218" r="3.6" fill="#ffffff"/>
+  <circle cx="327" cy="218" r="3.6" fill="#ffffff"/>
+  <circle cx="188" cy="228" r="1.8" fill="#ffffff" opacity="0.85"/>
+  <circle cx="320" cy="228" r="1.8" fill="#ffffff" opacity="0.85"/>
+
+  <!-- Smile -->
+  <path d="M230 286 Q256 304 282 286" stroke="#1a2530" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+</svg>

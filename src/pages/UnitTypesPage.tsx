@@ -220,7 +220,8 @@ export function UnitTypesPage() {
   const totalAvailable = drugs.filter(d => !usedDrugIds.has(d.id)).length
 
   return (
-    <div className="flex h-full">
+    <div className="h-full p-6 lg:p-8">
+      <div className="flex h-full max-w-6xl mx-auto overflow-hidden rounded-xl border border-hairline bg-white">
       {/* ── Left panel: unit type list ── */}
       <div className="w-56 border-r border-hairline flex flex-col bg-white flex-shrink-0">
         <div className="px-4 py-4 border-b border-hairline flex items-center justify-between">
@@ -268,7 +269,7 @@ export function UnitTypesPage() {
             เลือกประเภทหน่วยจากรายการทางซ้าย หรือกด + เพื่อเพิ่มใหม่
           </div>
         ) : (
-          <div className="p-6 max-w-3xl">
+          <div className="p-6 w-full">
             {/* Unit type form */}
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-base font-semibold text-ink">
@@ -381,7 +382,7 @@ export function UnitTypesPage() {
                                 min="1"
                                 value={item.qtyPerSet}
                                 onChange={e => handleQtyChange(item, Number(e.target.value))}
-                                className="w-20 text-center border border-hairline rounded-md px-2 py-1 text-sm focus:outline-none focus:border-ink"
+                                className="w-20 text-center border border-hairline rounded-md px-2 py-1 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30"
                               />
                             </td>
                             <td className="px-4 py-2.5 text-muted text-sm">{item.unitSnapshot}</td>
@@ -389,7 +390,7 @@ export function UnitTypesPage() {
                               <button
                                 type="button"
                                 onClick={() => handleDeleteItem(item)}
-                                className="p-1.5 rounded text-muted hover:text-error hover:bg-red-50 transition-colors"
+                                className="p-1.5 rounded text-muted hover:text-error hover:bg-error-bg transition-colors"
                               >
                                 <Trash2 size={14} />
                               </button>
@@ -419,7 +420,7 @@ export function UnitTypesPage() {
                         value={drugSearch}
                         onChange={e => { setDrugSearch(e.target.value); setSearchOpen(true) }}
                         onFocus={() => setSearchOpen(true)}
-                        className="w-full h-10 pl-9 pr-3 rounded-md border border-hairline bg-white text-sm text-ink focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink placeholder:text-muted-soft"
+                        className="w-full h-10 pl-9 pr-3 rounded-md border border-hairline bg-white text-sm text-ink focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 placeholder:text-muted-soft"
                       />
                     </div>
 
@@ -460,6 +461,7 @@ export function UnitTypesPage() {
             )}
           </div>
         )}
+      </div>
       </div>
     </div>
   )

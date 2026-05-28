@@ -112,7 +112,7 @@ export function DefaultSetsPage() {
   }))
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-6 lg:p-8 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-ink">ชุดยาเริ่มต้น</h1>
@@ -185,14 +185,14 @@ export function DefaultSetsPage() {
                           min="1"
                           value={item.qtyPerSet}
                           onChange={e => handleQtyChange(item, Number(e.target.value))}
-                          className="w-20 text-center border border-hairline rounded-md px-2 py-1 text-sm focus:outline-none focus:border-ink"
+                          className="w-20 text-center border border-hairline rounded-md px-2 py-1 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30"
                         />
                       </td>
                       <td className="px-4 py-3 text-muted">{item.unitSnapshot}</td>
                       <td className="px-4 py-3">
                         <button
                           onClick={() => handleDelete(item)}
-                          className="p-1.5 rounded text-muted hover:text-error hover:bg-red-50 transition-colors"
+                          className="p-1.5 rounded text-muted hover:text-error hover:bg-error-bg transition-colors"
                         >
                           <Trash2 size={14} />
                         </button>

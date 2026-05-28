@@ -9,10 +9,47 @@
 
   body {
     @apply bg-canvas text-body antialiased;
+    background:
+      linear-gradient(180deg, #eef7f3 0%, #f7fbf8 48%, #fff8ed 100%);
+  }
+
+  .app-shell {
+    background:
+      linear-gradient(135deg, #dceee8 0%, #f4faf7 48%, #fff1d6 100%);
+  }
+
+  .app-main {
+    background:
+      linear-gradient(180deg, rgba(224, 240, 234, 0.92) 0%, rgba(247, 251, 248, 0.96) 280px, rgba(255, 249, 239, 0.92) 100%);
+  }
+
+  .app-main::before {
+    content: '';
+    position: sticky;
+    top: 0;
+    display: block;
+    height: 4px;
+    background: linear-gradient(90deg, #0c7c73 0%, #2563eb 52%, #b7791f 100%);
+    z-index: 20;
+  }
+
+  @media print {
+    .app-shell,
+    .app-main {
+      background: #fff;
+    }
+
+    .app-main::before {
+      display: none;
+    }
   }
 
   * {
     box-sizing: border-box;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-ink;
   }
 }
 

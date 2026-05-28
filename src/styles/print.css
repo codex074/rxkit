@@ -14,7 +14,9 @@
   .no-print,
   nav,
   aside,
-  header {
+  header,
+  [data-sonner-toaster],
+  [data-sonner-toast] {
     display: none !important;
   }
 
@@ -23,6 +25,14 @@
     max-width: 100%;
     padding: 0;
     margin: 0;
+  }
+
+  .app-shell,
+  .app-main {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
   }
 
   table {
@@ -54,14 +64,21 @@
     font-weight: 600;
   }
 
-  .label-grid {
-    display: grid;
+  .label-pages {
+    display: block !important;
+    padding: 0 !important;
   }
 
-  .label-item {
+  .label-page {
     border: 1px solid #ccc;
     page-break-inside: avoid;
+    break-inside: avoid;
     overflow: hidden;
+  }
+
+  .label-page:not(:last-child) {
+    page-break-after: always;
+    break-after: page;
   }
 
   input[type="checkbox"] {

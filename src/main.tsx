@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { Toaster } from 'sonner'
 import { AuthProvider } from './context/AuthContext'
 import { AppRouter } from './routes/AppRouter'
+import { registerServiceWorker } from './pwa'
 import './styles/index.css'
 import './styles/print.css'
 
@@ -14,3 +15,5 @@ createRoot(document.getElementById('root')!).render(
     </AuthProvider>
   </StrictMode>,
 )
+
+registerServiceWorker()

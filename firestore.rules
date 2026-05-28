@@ -69,7 +69,7 @@ service cloud.firestore {
       allow read: if isViewer();
       allow create: if isStaff();
       allow update: if isStaff();
-      allow delete: if false;
+      allow delete: if isStaff();
     }
 
     // Field unit items collection

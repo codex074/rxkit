@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Printer, ArrowLeft } from 'lucide-react'
 import { getFieldUnitById, getFieldUnitItems, getAppSettings } from '../firebase/firestore'
@@ -7,6 +7,7 @@ import { formatThaiDate } from '../utils/date'
 import type { FieldUnit, FieldUnitItem } from '../types/fieldUnit'
 import type { AppSettings } from '../types/settings'
 import { DEFAULT_SETTINGS } from '../types/settings'
+import { toast } from 'sonner'
 
 export function PrintChecklistPage() {
   const { id } = useParams<{ id: string }>()
@@ -14,6 +15,7 @@ export function PrintChecklistPage() {
   const [items, setItems] = useState<FieldUnitItem[]>([])
   const [settings, setSettings] = useState<AppSettings>({ ...DEFAULT_SETTINGS, updatedAt: new Date() })
   const [loading, setLoading] = useState(true)
+  const didAutoPrint = useRef(false)
 
   useEffect(() => {
     if (!id) return
@@ -24,6 +26,14 @@ export function PrintChecklistPage() {
       setLoading(false)
     })
   }, [id])
+
+  useEffect(() => {
+    if (loading || !fieldUnit || didAutoPrint.current) return
+    didAutoPrint.current = true
+    toast.dismiss()
+    const timer = window.setTimeout(() => window.print(), 250)
+    return () => window.clearTimeout(timer)
+  }, [loading, fieldUnit])
 
   if (loading) return <div className="flex justify-center py-16"><Spinner size={24} /></div>
   if (!fieldUnit) return <div className="p-8 text-muted text-sm">ไม่พบรายการ</div>

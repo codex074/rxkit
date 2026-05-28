@@ -54,7 +54,7 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
+    <div className="p-6 lg:p-8 max-w-6xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-ink">ตั้งค่าระบบ</h1>
         <p className="text-sm text-muted mt-0.5">ข้อมูลโรงพยาบาลและการตั้งค่าฉลากยา</p>
@@ -92,21 +92,21 @@ export function SettingsPage() {
               width: `${Math.min(settings.labelWidthMm * 2, 280)}px`,
               height: `${Math.min(settings.labelHeightMm * 2, 140)}px`,
               fontSize: `${settings.labelFontSizePx}px`,
-              border: '1px solid #ccc',
+              border: '1px solid #d7e4df',
               padding: '6px',
               backgroundColor: 'white',
               fontFamily: 'Sarabun, sans-serif',
             }}
           >
-            <div style={{ fontWeight: 700, borderBottom: '1px solid #ccc', paddingBottom: 2, marginBottom: 2 }}>
+            <div style={{ fontWeight: 700, borderBottom: '1px solid #d7e4df', paddingBottom: 2, marginBottom: 2 }}>
               {settings.hospitalName}
             </div>
             <div style={{ fontWeight: 700 }}>ชื่อยาตัวอย่าง 500 mg</div>
-            <div style={{ color: '#555' }}>เม็ด</div>
+            <div style={{ color: '#556562' }}>เม็ด</div>
             <div>รับประทาน 1 เม็ด วันละ 3 ครั้ง</div>
-            <div style={{ borderTop: '1px solid #ccc', marginTop: 2, paddingTop: 2, display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ borderTop: '1px solid #d7e4df', marginTop: 2, paddingTop: 2, display: 'flex', justifyContent: 'space-between' }}>
               <span>จำนวน: <strong>30 เม็ด</strong></span>
-              <span style={{ color: '#555' }}>ปฐมพยาบาล</span>
+              <span style={{ color: '#556562' }}>ปฐมพยาบาล</span>
             </div>
           </div>
         </div>

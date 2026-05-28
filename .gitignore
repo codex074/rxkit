@@ -32,3 +32,6 @@ firestore-debug.log
 .env
 .env.local
 .env.*.local
+
+# Local source/reference files (hospital data, not for repo)
+raw/

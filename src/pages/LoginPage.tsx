@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Pill } from 'lucide-react'
 import { loginWithUsername } from '../firebase/auth'
 import { isFirebaseConfigured } from '../firebase/config'
 import { writeActivityLog } from '../firebase/firestore'
@@ -37,14 +36,15 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4"
-      style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #f5f3ff 100%)' }}>
+      style={{ background: 'linear-gradient(135deg, #e8f4ef 0%, #fbfdfc 48%, #fff7ed 100%)' }}>
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8 gap-3">
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shadow-primary/25"
-            style={{ background: 'linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)' }}>
-            <Pill size={26} className="text-white" />
-          </div>
+          <img
+            src="/logo.svg"
+            alt="RxKit"
+            className="w-16 h-16 rounded-2xl shadow-lg shadow-primary/25"
+          />
           <div className="text-center">
             <h1 className="text-xl font-bold text-ink">ยาออกหน่วย</h1>
             <p className="text-sm text-muted">ระบบจัดเตรียมยาออกหน่วย</p>
@@ -52,10 +52,10 @@ export function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-white border border-hairline rounded-2xl shadow-xl shadow-slate-200/60 p-6">
+        <div className="bg-white border border-hairline rounded-xl shadow-xl shadow-primary/10 p-6">
           {!configured && (
-            <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-              <p className="text-xs text-yellow-800 font-medium">
+            <div className="mb-4 p-3 bg-warning-bg border border-warning/20 rounded-md">
+              <p className="text-xs text-warning-text font-medium">
                 Firebase ยังไม่ได้ตั้งค่า กรุณาสร้างไฟล์ .env และระบุค่า VITE_FIREBASE_*
               </p>
             </div>
@@ -86,7 +86,7 @@ export function LoginPage() {
             />
 
             {error && (
-              <p className="text-xs text-error bg-red-50 border border-red-200 rounded-md px-3 py-2">
+              <p className="text-xs text-error-text bg-error-bg border border-error/20 rounded-md px-3 py-2">
                 {error}
               </p>
             )}

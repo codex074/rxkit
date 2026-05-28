@@ -4,7 +4,7 @@ import { getAllDrugs, createDrug, updateDrug, deactivateDrug, writeActivityLog }
 import { useAuthContext } from '../context/AuthContext'
 import { useRole } from '../hooks/useRole'
 import { Button } from '../components/ui/Button'
-import { Input } from '../components/ui/Input'
+import { Input, Textarea } from '../components/ui/Input'
 import { Modal } from '../components/ui/Modal'
 import { Badge } from '../components/ui/Badge'
 import { EmptyState } from '../components/ui/EmptyState'
@@ -58,7 +58,7 @@ function DrugForm({
   function field(key: keyof DrugFormData) {
     return {
       value: String(form[key] ?? ''),
-      onChange: (ev: React.ChangeEvent<HTMLInputElement>) =>
+      onChange: (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
         setForm(f => ({ ...f, [key]: key === 'pricePerUnit' ? Number(ev.target.value) : ev.target.value })),
     }
   }
@@ -87,7 +87,14 @@ function DrugForm({
         {...field('pricePerUnit')}
         error={errors.pricePerUnit}
       />
-      <Input label="วิธีใช้ (สำหรับฉลาก)" placeholder="เช่น รับประทาน 1 เม็ด วันละ 3 ครั้ง" id="instruction" {...field('instruction')} />
+      <Textarea
+        label="วิธีใช้ (สำหรับฉลาก)"
+        placeholder={'เช่น\nรับประทานครั้งละ 1 เม็ด\nวันละ 3 ครั้ง หลังอาหาร'}
+        id="instruction"
+        rows={4}
+        className="min-h-28 resize-y"
+        {...field('instruction')}
+      />
       <Input label="คำเตือน (สำหรับฉลาก)" placeholder="เช่น ห้ามใช้ในผู้แพ้ยา" id="warning" {...field('warning')} />
       <Input label="หมายเหตุบนฉลาก" id="labelNote" {...field('labelNote')} />
 
@@ -186,7 +193,7 @@ export function DrugListPage() {
   }
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="p-6 lg:p-8 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-ink">รายการยา</h1>
@@ -205,7 +212,7 @@ export function DrugListPage() {
         <div className="relative flex-1 max-w-sm">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
           <input
-            className="w-full h-10 pl-9 pr-3.5 rounded-md border border-hairline bg-white text-sm focus:outline-none focus:border-ink"
+            className="w-full h-10 pl-9 pr-3.5 rounded-md border border-hairline bg-white text-sm text-ink focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 placeholder:text-muted-soft"
             placeholder="ค้นหาชื่อยา รหัส ความแรง..."
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -279,7 +286,7 @@ export function DrugListPage() {
                         {drug.active ? (
                           <button
                             onClick={() => handleDeactivate(drug)}
-                            className="p-1.5 rounded text-muted hover:text-error hover:bg-red-50 transition-colors"
+                            className="p-1.5 rounded text-muted hover:text-error hover:bg-error-bg transition-colors"
                             title="ปิดใช้งาน"
                           >
                             <XCircle size={14} />
@@ -287,7 +294,7 @@ export function DrugListPage() {
                         ) : (
                           <button
                             onClick={() => handleActivate(drug)}
-                            className="p-1.5 rounded text-muted hover:text-success hover:bg-green-50 transition-colors"
+                            className="p-1.5 rounded text-muted hover:text-success hover:bg-success-bg transition-colors"
                             title="เปิดใช้งาน"
                           >
                             <CheckCircle size={14} />

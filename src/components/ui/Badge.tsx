@@ -3,11 +3,11 @@ import { type ReactNode } from 'react'
 type BadgeVariant = 'default' | 'success' | 'warning' | 'error' | 'info'
 
 const variantClasses: Record<BadgeVariant, string> = {
-  default: 'bg-surface-card text-muted',
-  success: 'bg-success-bg text-success-text',
-  warning: 'bg-warning-bg text-warning-text',
-  error:   'bg-error-bg text-error-text',
-  info:    'bg-info-bg text-info-text',
+  default: 'bg-surface-card text-body border border-hairline',
+  success: 'bg-success-bg text-success-text border border-success/20',
+  warning: 'bg-warning-bg text-warning-text border border-warning/20',
+  error:   'bg-error-bg text-error-text border border-error/20',
+  info:    'bg-info-bg text-info-text border border-info/20',
 }
 
 interface BadgeProps {

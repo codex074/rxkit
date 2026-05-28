@@ -42,16 +42,18 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="w-60 h-full bg-sidebar flex flex-col no-print">
+    <aside className="w-60 h-full bg-surface-soft border-r border-hairline flex flex-col no-print shadow-xl shadow-primary/10">
       {/* Logo */}
-      <div className="px-5 py-5 border-b border-sidebar-border">
+      <div className="px-5 py-5 border-b border-hairline">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/30">
-            <Pill size={16} className="text-white" />
-          </div>
+          <img
+            src="/logo.svg"
+            alt="RxKit"
+            className="w-9 h-9 rounded-xl shadow-sm shadow-primary/10"
+          />
           <div>
-            <p className="text-sm font-semibold text-white leading-tight">ยาออกหน่วย</p>
-            <p className="text-xs leading-tight" style={{ color: '#475569' }}>RxKit</p>
+            <p className="text-sm font-semibold text-ink leading-tight">ยาออกหน่วย</p>
+            <p className="text-xs leading-tight text-muted">RxKit</p>
           </div>
         </div>
       </div>
@@ -67,8 +69,8 @@ export function Sidebar() {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-primary text-white shadow-sm'
-                    : 'text-sidebar-text hover:bg-sidebar-elevated hover:text-white'
+                    ? 'bg-primary text-white shadow-md shadow-primary/25'
+                    : 'text-body hover:bg-surface-card hover:text-ink'
                 }`
               }
             >
@@ -80,20 +82,20 @@ export function Sidebar() {
       </nav>
 
       {/* User */}
-      <div className="px-3 py-4 border-t border-sidebar-border">
+      <div className="px-3 py-4 border-t border-hairline">
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg mb-1">
-          <div className="w-7 h-7 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center flex-shrink-0">
-            <span className="text-xs font-bold text-primary" style={{ color: '#93c5fd' }}>
+          <div className="w-7 h-7 rounded-full bg-white border border-hairline flex items-center justify-center flex-shrink-0">
+            <span className="text-xs font-bold text-primary-active">
               {user?.displayName?.charAt(0)?.toUpperCase() ?? 'U'}
             </span>
           </div>
-          <p className="text-sm font-medium text-white truncate flex-1">
+          <p className="text-sm font-medium text-ink truncate flex-1">
             {user?.displayName ?? user?.username}
           </p>
         </div>
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-sidebar-text hover:bg-sidebar-elevated hover:text-red-400 transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-body hover:bg-surface-card hover:text-error transition-colors"
         >
           <LogOut size={16} />
           ออกจากระบบ
